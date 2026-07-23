@@ -4,56 +4,81 @@ import plotly.express as px
 import streamlit as st
 
 # -----------------------------------------------------------------------------
-# 1. Page Configuration & Custom CSS
+# 1. Corporate Brand Palette Configuration
+# -----------------------------------------------------------------------------
+CORP_ORANGE = "#F26522"  # MPM Corporate Primary Orange
+CORP_LIGHT_BLUE = "#38BDF8"  # Corporate Accent Light Blue
+CORP_DARK_BLUE = "#0F172A"  # Slate Dark Background
+CORP_CARD_BG = "#1E293B"  # Card Background
+CORP_BORDER = "#334155"  # Card Border
+
+BRAND_PALETTE = {
+    "Google Search": CORP_ORANGE,
+    "Meta Retargeting": CORP_LIGHT_BLUE,
+    "TikTok Awareness": "#A855F7",  # Soft Purple Accent
+}
+
+# -----------------------------------------------------------------------------
+# 2. Page Configuration & Custom Corporate Styling
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="Marketing Strategy & ROI Dashboard",
-    page_icon="⚡",
+    page_icon="🟧",
     layout="wide",
 )
 
-# Custom CSS for modern card container layouts and refined typography
 st.markdown(
-    """
+    f"""
     <style>
-        /* Card Container Styling */
-        div[data-testid="stMetric"] {
-            background-color: #0f172a;
-            border: 1px solid #1e293b;
+        /* Card Container Styling with Corporate Accent Borders */
+        div[data-testid="stMetric"] {{
+            background-color: {CORP_CARD_BG};
+            border-left: 4px solid {CORP_ORANGE};
+            border-top: 1px solid {CORP_BORDER};
+            border-right: 1px solid {CORP_BORDER};
+            border-bottom: 1px solid {CORP_BORDER};
             padding: 18px 22px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }}
         
         /* Metric Label Styling */
-        div[data-testid="stMetricLabel"] {
+        div[data-testid="stMetricLabel"] {{
             font-size: 0.85rem !important;
             font-weight: 600 !important;
-            color: #94a3b8 !important;
+            color: #94A3B8 !important;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-        }
+        }}
 
         /* Metric Value Styling */
-        div[data-testid="stMetricValue"] {
+        div[data-testid="stMetricValue"] {{
             font-size: 1.8rem !important;
             font-weight: 700 !important;
-            color: #f8fafc !important;
-        }
+            color: #F8FAFC !important;
+        }}
+
+        /* Expander Custom Border Accent */
+        div[data-testid="stExpander"] {{
+            border: 1px solid {CORP_BORDER};
+            border-left: 4px solid {CORP_LIGHT_BLUE};
+            border-radius: 8px;
+            background-color: {CORP_CARD_BG};
+        }}
 
         /* Section Dividers */
-        hr {
+        hr {{
             margin-top: 1.5rem;
             margin-bottom: 1.5rem;
-            border-color: #334155;
-        }
+            border-color: {CORP_BORDER};
+        }}
     </style>
     """,
     unsafe_allow_html=True,
 )
 
 # -----------------------------------------------------------------------------
-# 2. Data Loading & Preprocessing
+# 3. Data Loading & Preprocessing
 # -----------------------------------------------------------------------------
 csv_data = """Date, Campaign, Spend, Clicks, Conversions, Revenue
 2026-07-01, Google Search, 1200, 340, 28, 4200
@@ -76,16 +101,8 @@ def load_data():
 
 df = load_data()
 
-# Brand Color Palette for Plotly Charts
-BRAND_PALETTE = {
-    "Google Search": "#3B82F6",  # Bright Blue
-    "Meta Retargeting": "#8B5CF6",  # Vibrant Purple
-    "TikTok Awareness": "#EC4899",  # Pink
-}
-PRIMARY_GRADIENT = ["#3B82F6", "#10B981"]
-
 # -----------------------------------------------------------------------------
-# 3. Sidebar Filters & Data Export
+# 4. Sidebar Filters & Data Export
 # -----------------------------------------------------------------------------
 st.sidebar.title("🎛️ Control Panel")
 st.sidebar.markdown("---")
@@ -97,7 +114,6 @@ selected_campaigns = st.sidebar.multiselect(
     default=all_campaigns,
 )
 
-# Apply Filter
 filtered_df = (
     df[df["Campaign"].isin(selected_campaigns)] if selected_campaigns else df.iloc[0:0]
 )
@@ -105,7 +121,6 @@ filtered_df = (
 st.sidebar.markdown("---")
 st.sidebar.subheader("📥 Executive Export")
 
-# Export CSV Button
 if not filtered_df.empty:
     csv_bytes = filtered_df.to_csv(index=False).encode("utf-8")
     st.sidebar.download_button(
@@ -119,19 +134,14 @@ else:
     st.sidebar.info("Select at least one campaign to enable export.")
 
 # -----------------------------------------------------------------------------
-# 4. Header & AI Executive Summary
+# 5. Header & AI Executive Summary
 # -----------------------------------------------------------------------------
-st.title("⚡ Marketing Strategy & ROI Dashboard")
-st.caption(
-    "Real-time performance analytics, period-over-period delta tracking, and campaign ROI."
-)
+st.title("📈 Marketing Strategy & ROI Dashboard")
+st.caption("Corporate Performance & Campaign Intelligence Dashboard")
 
 if not filtered_df.empty:
-    # Calculate automated AI summary insights
     top_revenue_campaign = (
-        filtered_df.groupby("Campaign")["Revenue"]
-        .sum()
-        .idxmax()
+        filtered_df.groupby("Campaign")["Revenue"].sum().idxmax()
     )
     total_spend = filtered_df["Spend"].sum()
     total_revenue = filtered_df["Revenue"].sum()
@@ -142,17 +152,16 @@ if not filtered_df.empty:
             f"""
         - **Top Revenue Driver:** **{top_revenue_campaign}** generated the highest total return within the selected filters.
         - **Return on Investment:** The filtered portfolio achieved an overall ROI of **{avg_roi:.2f}x**, generating **${total_revenue:,.2f}** from **${total_spend:,.2f}** spent.
-        - **Efficiency Note:** High CTR campaigns (e.g., *TikTok Awareness*) offer low customer acquisition costs, whereas search/retargeting channels drive stronger conversion value.
+        - **Strategic Note:** High top-of-funnel engagement provides balanced coverage alongside retargeting performance.
         """
         )
 
 st.divider()
 
 # -----------------------------------------------------------------------------
-# 5. Top KPI Cards with Period-over-Period Deltas
+# 6. Top KPI Cards with Period-over-Period Deltas
 # -----------------------------------------------------------------------------
 if not filtered_df.empty:
-    # Logic to calculate second half vs. first half of selected timeframe for Delta %
     unique_dates = sorted(filtered_df["Date"].unique())
     midpoint = len(unique_dates) // 2
 
@@ -163,21 +172,17 @@ if not filtered_df.empty:
         p1_df = filtered_df[filtered_df["Date"].isin(first_half_dates)]
         p2_df = filtered_df[filtered_df["Date"].isin(second_half_dates)]
 
-        # Spend calculations
         spend_p1, spend_p2 = p1_df["Spend"].sum(), p2_df["Spend"].sum()
         spend_delta = (
             ((spend_p2 - spend_p1) / spend_p1 * 100) if spend_p1 > 0 else 0
         )
 
-        # Revenue calculations
         rev_p1, rev_p2 = p1_df["Revenue"].sum(), p2_df["Revenue"].sum()
         rev_delta = ((rev_p2 - rev_p1) / rev_p1 * 100) if rev_p1 > 0 else 0
 
-        # Conversions calculations
         conv_p1, conv_p2 = p1_df["Conversions"].sum(), p2_df["Conversions"].sum()
         conv_delta = ((conv_p2 - conv_p1) / conv_p1 * 100) if conv_p1 > 0 else 0
 
-        # ROI calculations
         roi_p1 = rev_p1 / spend_p1 if spend_p1 > 0 else 0
         roi_p2 = rev_p2 / spend_p2 if spend_p2 > 0 else 0
         roi_delta = ((roi_p2 - roi_p1) / roi_p1 * 100) if roi_p1 > 0 else 0
@@ -191,7 +196,7 @@ if not filtered_df.empty:
             label="Total Spend",
             value=f"${total_spend:,.2f}",
             delta=f"{spend_delta:+.1f}% vs prior period",
-            delta_color="inverse",  # Increasing spend is highlighted according to preference
+            delta_color="inverse",
         )
     with col2:
         st.metric(
@@ -215,13 +220,13 @@ if not filtered_df.empty:
     st.divider()
 
     # -----------------------------------------------------------------------------
-    # 6. Interactive Plotly Charts
+    # 7. Interactive Corporate Visualizations
     # -----------------------------------------------------------------------------
     col_chart1, col_chart2 = st.columns(2)
 
     # Chart 1: Daily Revenue vs Spend Line Chart
     with col_chart1:
-        st.subheader("Daily Revenue vs. Spend")
+        st.subheader("Daily Revenue Trend")
         daily_df = (
             filtered_df.groupby(["Date", "Campaign"])[["Revenue", "Spend"]]
             .sum()
@@ -278,7 +283,7 @@ if not filtered_df.empty:
         )
         fig_bar.update_traces(
             textposition="outside",
-            marker_line_color="rgb(8,48,107)",
+            marker_line_color=CORP_ORANGE,
             marker_line_width=1.5,
         )
         st.plotly_chart(fig_bar, use_container_width=True)
@@ -286,7 +291,7 @@ if not filtered_df.empty:
     st.divider()
 
     # -----------------------------------------------------------------------------
-    # 7. Interactive Raw Data Table
+    # 8. Filtered Raw Data Table
     # -----------------------------------------------------------------------------
     st.subheader("📋 Filtered Raw Data")
 
