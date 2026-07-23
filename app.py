@@ -30,20 +30,26 @@ st.set_page_config(
 st.markdown(
     f"""
     <style>
+        /* Force dark theme root background for contrast consistency */
+        .stApp {{
+            background-color: {CORP_DARK_BLUE};
+            color: #F8FAFC;
+        }}
+
         /* Card Container Styling with Corporate Accent Borders */
         div[data-testid="stMetric"] {{
-            background-color: {CORP_CARD_BG};
-            border-left: 4px solid {CORP_ORANGE};
-            border-top: 1px solid {CORP_BORDER};
-            border-right: 1px solid {CORP_BORDER};
-            border-bottom: 1px solid {CORP_BORDER};
+            background-color: {CORP_CARD_BG} !important;
+            border-left: 4px solid {CORP_ORANGE} !important;
+            border-top: 1px solid {CORP_BORDER} !important;
+            border-right: 1px solid {CORP_BORDER} !important;
+            border-bottom: 1px solid {CORP_BORDER} !important;
             padding: 18px 22px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }}
         
-        /* Metric Label Styling */
-        div[data-testid="stMetricLabel"] {{
+        /* Metric Label Styling (High Contrast Light Slate) */
+        div[data-testid="stMetricLabel"] p {{
             font-size: 0.85rem !important;
             font-weight: 600 !important;
             color: #94A3B8 !important;
@@ -51,26 +57,39 @@ st.markdown(
             letter-spacing: 0.05em;
         }}
 
-        /* Metric Value Styling */
-        div[data-testid="stMetricValue"] {{
+        /* Metric Value Styling (Bright White) */
+        div[data-testid="stMetricValue"] div {{
             font-size: 1.8rem !important;
             font-weight: 700 !important;
-            color: #F8FAFC !important;
+            color: #FFFFFF !important;
         }}
 
-        /* Expander Custom Border Accent */
+        /* AI Expander Box Styling & Text Color Fix */
         div[data-testid="stExpander"] {{
-            border: 1px solid {CORP_BORDER};
-            border-left: 4px solid {CORP_LIGHT_BLUE};
+            border: 1px solid {CORP_BORDER} !important;
+            border-left: 4px solid {CORP_LIGHT_BLUE} !important;
             border-radius: 8px;
-            background-color: {CORP_CARD_BG};
+            background-color: {CORP_CARD_BG} !important;
+        }}
+
+        /* Ensure all text inside expanders & cards is crisp white/light */
+        div[data-testid="stExpander"] p, 
+        div[data-testid="stExpander"] li {{
+            color: #F8FAFC !important;
+            font-size: 0.95rem;
+        }}
+
+        /* Expander Title/Header Text Color */
+        div[data-testid="stExpander"] summary span {{
+            color: #FFFFFF !important;
+            font-weight: 600;
         }}
 
         /* Section Dividers */
         hr {{
             margin-top: 1.5rem;
             margin-bottom: 1.5rem;
-            border-color: {CORP_BORDER};
+            border-color: {CORP_BORDER} !important;
         }}
     </style>
     """,
