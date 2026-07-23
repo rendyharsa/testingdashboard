@@ -30,13 +30,18 @@ st.set_page_config(
 st.markdown(
     f"""
     <style>
-        /* Force dark theme root background for contrast consistency */
+        /* Force dark theme root background & text color */
         .stApp {{
-            background-color: {CORP_DARK_BLUE};
-            color: #F8FAFC;
+            background-color: {CORP_DARK_BLUE} !important;
+            color: #F8FAFC !important;
         }}
 
-        /* Card Container Styling with Corporate Accent Borders */
+        /* Ensure all general headers and text are bright white */
+        h1, h2, h3, h4, h5, h6, p, label, span {{
+            color: #F8FAFC !important;
+        }}
+
+        /* Card Container Styling */
         div[data-testid="stMetric"] {{
             background-color: {CORP_CARD_BG} !important;
             border-left: 4px solid {CORP_ORANGE} !important;
@@ -48,7 +53,7 @@ st.markdown(
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }}
         
-        /* Metric Label Styling (High Contrast Light Slate) */
+        /* Metric Label Styling */
         div[data-testid="stMetricLabel"] p {{
             font-size: 0.85rem !important;
             font-weight: 600 !important;
@@ -57,32 +62,64 @@ st.markdown(
             letter-spacing: 0.05em;
         }}
 
-        /* Metric Value Styling (Bright White) */
+        /* Metric Value Styling */
         div[data-testid="stMetricValue"] div {{
             font-size: 1.8rem !important;
             font-weight: 700 !important;
             color: #FFFFFF !important;
         }}
 
-        /* AI Expander Box Styling & Text Color Fix */
+        /* --- AI EXPANDER HEADER & CONTRAST FIXES --- */
+
+        /* Outer Container */
         div[data-testid="stExpander"] {{
             border: 1px solid {CORP_BORDER} !important;
             border-left: 4px solid {CORP_LIGHT_BLUE} !important;
-            border-radius: 8px;
+            border-radius: 8px !important;
             background-color: {CORP_CARD_BG} !important;
+            overflow: hidden;
         }}
 
-        /* Ensure all text inside expanders & cards is crisp white/light */
-        div[data-testid="stExpander"] p, 
-        div[data-testid="stExpander"] li {{
-            color: #F8FAFC !important;
-            font-size: 0.95rem;
-        }}
-
-        /* Expander Title/Header Text Color */
-        div[data-testid="stExpander"] summary span {{
+        /* Expander Unhovered Header (Summary) - Explicit Dark Background & Light Text */
+        div[data-testid="stExpander"] > summary {{
+            background-color: {CORP_CARD_BG} !important;
             color: #FFFFFF !important;
-            font-weight: 600;
+            border-radius: 8px !important;
+            padding: 12px 16px !important;
+        }}
+
+        /* Expander Header Text & Icon Fix */
+        div[data-testid="stExpander"] summary span,
+        div[data-testid="stExpander"] summary p,
+        div[data-testid="stExpander"] summary svg {{
+            color: #FFFFFF !important;
+            fill: #FFFFFF !important;
+            font-weight: 600 !important;
+            font-size: 1rem !important;
+        }}
+
+        /* Expander Hover State */
+        div[data-testid="stExpander"] > summary:hover {{
+            background-color: #334155 !important;
+            color: {CORP_ORANGE} !important;
+        }}
+        div[data-testid="stExpander"] > summary:hover span,
+        div[data-testid="stExpander"] > summary:hover p {{
+            color: {CORP_ORANGE} !important;
+        }}
+
+        /* Body text & list items inside Expander Content */
+        div[data-testid="stExpander"] div[role="region"] {{
+            background-color: {CORP_CARD_BG} !important;
+            padding: 12px 16px !important;
+        }}
+        div[data-testid="stExpander"] div[role="region"] p, 
+        div[data-testid="stExpander"] div[role="region"] li {{
+            color: #CBD5E1 !important;
+            font-size: 0.95rem !important;
+        }}
+        div[data-testid="stExpander"] div[role="region"] strong {{
+            color: #FFFFFF !important;
         }}
 
         /* Section Dividers */
@@ -243,7 +280,6 @@ if not filtered_df.empty:
     # -----------------------------------------------------------------------------
     col_chart1, col_chart2 = st.columns(2)
 
-    # Chart 1: Daily Revenue vs Spend Line Chart
     with col_chart1:
         st.subheader("Daily Revenue Trend")
         daily_df = (
@@ -274,7 +310,6 @@ if not filtered_df.empty:
         )
         st.plotly_chart(fig_line, use_container_width=True)
 
-    # Chart 2: Conversions by Campaign Bar Chart
     with col_chart2:
         st.subheader("Conversions by Campaign")
         camp_df = (
