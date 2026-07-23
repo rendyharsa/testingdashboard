@@ -11,6 +11,7 @@ CORP_LIGHT_BLUE = "#38BDF8"  # Corporate Accent Light Blue
 CORP_DARK_BLUE = "#0F172A"  # Slate Dark Background
 CORP_CARD_BG = "#1E293B"  # Card Background
 CORP_BORDER = "#334155"  # Card Border
+TEXT_COLOR = "#F8FAFC"  # High-Contrast Light Text
 
 BRAND_PALETTE = {
     "Google Search": CORP_ORANGE,
@@ -30,18 +31,18 @@ st.set_page_config(
 st.markdown(
     f"""
     <style>
-        /* Force dark theme root background & text color */
+        /* Force dark theme root background */
         .stApp {{
             background-color: {CORP_DARK_BLUE} !important;
-            color: #F8FAFC !important;
+            color: {TEXT_COLOR} !important;
         }}
 
-        /* Ensure all general headers and text are bright white */
+        /* General Headings & Paragraph Text Fix */
         h1, h2, h3, h4, h5, h6, p, label, span {{
-            color: #F8FAFC !important;
+            color: {TEXT_COLOR} !important;
         }}
 
-        /* Card Container Styling */
+        /* Metric Cards Styling */
         div[data-testid="stMetric"] {{
             background-color: {CORP_CARD_BG} !important;
             border-left: 4px solid {CORP_ORANGE} !important;
@@ -53,7 +54,6 @@ st.markdown(
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }}
         
-        /* Metric Label Styling */
         div[data-testid="stMetricLabel"] p {{
             font-size: 0.85rem !important;
             font-weight: 600 !important;
@@ -62,64 +62,55 @@ st.markdown(
             letter-spacing: 0.05em;
         }}
 
-        /* Metric Value Styling */
         div[data-testid="stMetricValue"] div {{
             font-size: 1.8rem !important;
             font-weight: 700 !important;
             color: #FFFFFF !important;
         }}
 
-        /* --- AI EXPANDER HEADER & CONTRAST FIXES --- */
-
-        /* Outer Container */
+        /* --- AI EXPANDER HEADER & CONTRAST FIX --- */
         div[data-testid="stExpander"] {{
             border: 1px solid {CORP_BORDER} !important;
             border-left: 4px solid {CORP_LIGHT_BLUE} !important;
             border-radius: 8px !important;
             background-color: {CORP_CARD_BG} !important;
-            overflow: hidden;
         }}
 
-        /* Expander Unhovered Header (Summary) - Explicit Dark Background & Light Text */
-        div[data-testid="stExpander"] > summary {{
+        /* Summary Header Target - Forces Dark Background & White Text */
+        div[data-testid="stExpander"] details summary {{
             background-color: {CORP_CARD_BG} !important;
             color: #FFFFFF !important;
             border-radius: 8px !important;
             padding: 12px 16px !important;
         }}
 
-        /* Expander Header Text & Icon Fix */
-        div[data-testid="stExpander"] summary span,
-        div[data-testid="stExpander"] summary p,
-        div[data-testid="stExpander"] summary svg {{
+        /* Expander Title Text, Icons & Paragraphs */
+        div[data-testid="stExpander"] details summary * {{
             color: #FFFFFF !important;
             fill: #FFFFFF !important;
             font-weight: 600 !important;
-            font-size: 1rem !important;
         }}
 
         /* Expander Hover State */
-        div[data-testid="stExpander"] > summary:hover {{
+        div[data-testid="stExpander"] details summary:hover {{
             background-color: #334155 !important;
-            color: {CORP_ORANGE} !important;
-        }}
-        div[data-testid="stExpander"] > summary:hover span,
-        div[data-testid="stExpander"] > summary:hover p {{
-            color: {CORP_ORANGE} !important;
         }}
 
-        /* Body text & list items inside Expander Content */
+        div[data-testid="stExpander"] details summary:hover * {{
+            color: {CORP_ORANGE} !important;
+            fill: {CORP_ORANGE} !important;
+        }}
+
+        /* Expander Body Content */
         div[data-testid="stExpander"] div[role="region"] {{
             background-color: {CORP_CARD_BG} !important;
             padding: 12px 16px !important;
         }}
+
         div[data-testid="stExpander"] div[role="region"] p, 
         div[data-testid="stExpander"] div[role="region"] li {{
             color: #CBD5E1 !important;
             font-size: 0.95rem !important;
-        }}
-        div[data-testid="stExpander"] div[role="region"] strong {{
-            color: #FFFFFF !important;
         }}
 
         /* Section Dividers */
@@ -276,7 +267,7 @@ if not filtered_df.empty:
     st.divider()
 
     # -----------------------------------------------------------------------------
-    # 7. Interactive Corporate Visualizations
+    # 7. High-Contrast Interactive Plotly Visualizations
     # -----------------------------------------------------------------------------
     col_chart1, col_chart2 = st.columns(2)
 
@@ -298,12 +289,33 @@ if not filtered_df.empty:
             hover_data={"Spend": ":$,.2f", "Revenue": ":$,.2f", "Date": "|%B %d, %Y"},
             labels={"Revenue": "Revenue ($)", "Date": "Date"},
         )
+        
+        # Explicit High-Contrast Styling for Plotly Elements
         fig_line.update_layout(
             template="plotly_dark",
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#F8FAFC", size=12),
             legend=dict(
-                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1,
+                font=dict(color="#F8FAFC", size=12),
+                bgcolor="rgba(15, 23, 42, 0.8)",
+                bordercolor=CORP_BORDER,
+                borderwidth=1,
+            ),
+            xaxis=dict(
+                gridcolor=CORP_BORDER,
+                tickfont=dict(color="#F8FAFC"),
+                title=dict(font=dict(color="#F8FAFC")),
+            ),
+            yaxis=dict(
+                gridcolor=CORP_BORDER,
+                tickfont=dict(color="#F8FAFC"),
+                title=dict(font=dict(color="#F8FAFC")),
             ),
             hovermode="x unified",
             margin=dict(l=10, r=10, t=30, b=10),
@@ -328,15 +340,28 @@ if not filtered_df.empty:
             hover_data={"Spend": ":$,.2f", "Revenue": ":$,.2f"},
             labels={"Conversions": "Total Conversions"},
         )
+        
         fig_bar.update_layout(
             template="plotly_dark",
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#F8FAFC", size=12),
             showlegend=False,
+            xaxis=dict(
+                gridcolor=CORP_BORDER,
+                tickfont=dict(color="#F8FAFC"),
+                title=dict(font=dict(color="#F8FAFC")),
+            ),
+            yaxis=dict(
+                gridcolor=CORP_BORDER,
+                tickfont=dict(color="#F8FAFC"),
+                title=dict(font=dict(color="#F8FAFC")),
+            ),
             margin=dict(l=10, r=10, t=30, b=10),
         )
         fig_bar.update_traces(
             textposition="outside",
+            textfont=dict(color="#FFFFFF", size=13),
             marker_line_color=CORP_ORANGE,
             marker_line_width=1.5,
         )
